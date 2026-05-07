@@ -12,6 +12,7 @@ create table if not exists public.reports (
   vehicle_make text,
   vehicle_model text,
   vehicle_color text,
+  report_type   text check (report_type in ('driving', 'parking')),
   offense_types text[] default '{}',
   notes text,
   reporter_email text

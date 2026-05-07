@@ -1,6 +1,11 @@
 import { OFFENSES } from '../../data/offenses';
 import { COLORS } from '../../data/colors';
 
+const TYPE_META = {
+  driving: { label: 'Bad Driving', icon: '🚗💨' },
+  parking: { label: 'Bad Parking', icon: '🅿️' },
+};
+
 export default function StepConfirm({ report, onSubmit, onBack, submitting }) {
   const offenseLabels = OFFENSES
     .filter((o) => report.offense_types.includes(o.id))
@@ -8,10 +13,18 @@ export default function StepConfirm({ report, onSubmit, onBack, submitting }) {
     .join(', ');
 
   const colorHex = COLORS.find((c) => c.name === report.vehicle_color)?.hex;
+  const typeMeta = TYPE_META[report.report_type];
 
   return (
     <div className="flex flex-col h-full max-w-lg mx-auto px-4 py-4 gap-4">
-      <h2 className="text-2xl font-black text-white">Review & Submit</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="text-2xl font-black text-white">Review & Submit</h2>
+        {typeMeta && (
+          <span className="text-sm font-semibold px-3 py-1 rounded-full bg-brand-border text-gray-300">
+            {typeMeta.icon} {typeMeta.label}
+          </span>
+        )}
+      </div>
 
       <div className="bg-brand-card rounded-2xl border border-brand-border divide-y divide-brand-border text-base">
         <Row label="Plate">

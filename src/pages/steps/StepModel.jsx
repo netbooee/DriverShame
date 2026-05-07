@@ -10,7 +10,7 @@ export default function StepModel({ value, make, onChange, onNext, onBack }) {
   }
 
   return (
-    <StepShell step={4} total={6} title="Vehicle Model" subtitle={make} onBack={onBack}>
+    <StepShell step={5} total={7} title="Vehicle Model" subtitle={make} onBack={onBack}>
       <div className="grid grid-cols-2 gap-3">
         {models.map((model) => (
           <button

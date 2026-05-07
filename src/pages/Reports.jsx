@@ -181,7 +181,12 @@ function PlateGroup({ group }) {
               <span className="text-gray-300 text-sm truncate">{vehicleStr}</span>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {latest.report_type && (
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-border text-gray-400">
+                {latest.report_type === 'parking' ? '🅿️ Parking' : '🚗 Driving'}
+              </span>
+            )}
             <span
               className={`text-xs font-bold px-2.5 py-1 rounded-full
                 ${count > 1

@@ -1,14 +1,14 @@
 import StepShell from '../../components/StepShell';
 import { STATES } from '../../data/states';
 
-export default function StepState({ value, onChange, onNext }) {
+export default function StepState({ value, onChange, onNext, onBack }) {
   function select(state) {
     onChange(state);
     onNext();
   }
 
   return (
-    <StepShell step={1} total={6} title="Plate State" subtitle="Tap your state">
+    <StepShell step={2} total={7} title="Plate State" subtitle="Tap your state" onBack={onBack}>
       <div className="grid grid-cols-4 gap-2">
         {STATES.map((s) => (
           <button

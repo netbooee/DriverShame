@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 import { isDemo, demoInsertReport } from '../demo';
+import StepType from './steps/StepType';
 import StepState from './steps/StepState';
 import StepPlate from './steps/StepPlate';
 import StepMake from './steps/StepMake';
@@ -10,6 +11,7 @@ import StepColor from './steps/StepColor';
 import StepOffense from './steps/StepOffense';
 import StepConfirm from './steps/StepConfirm';
 
+const STEP_TYPE    = 0;
 const STEP_STATE   = 1;
 const STEP_PLATE   = 2;
 const STEP_MAKE    = 3;
@@ -19,6 +21,7 @@ const STEP_OFFENSE = 6;
 const STEP_CONFIRM = 7;
 
 const blank = {
+  report_type:    '',   // 'driving' | 'parking'
   plate_state:    '',
   plate_number:   '',
   vehicle_make:   '',
@@ -30,7 +33,7 @@ const blank = {
 
 export default function ReportFlow() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(STEP_STATE);
+  const [step, setStep] = useState(STEP_TYPE);
   const [report, setReport] = useState(blank);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -41,6 +44,11 @@ export default function ReportFlow() {
 
   function next() { setStep((s) => s + 1); }
   function back() { setStep((s) => s - 1); }
+
+  function selectType(type) {
+    set('report_type')(type);
+    next();
+  }
 
   async function submit() {
     setSubmitting(true);
@@ -65,8 +73,11 @@ export default function ReportFlow() {
     }
   }
 
+  if (step === STEP_TYPE)
+    return <StepType onChange={selectType} />;
+
   if (step === STEP_STATE)
-    return <StepState value={report.plate_state} onChange={set('plate_state')} onNext={next} />;
+    return <StepState value={report.plate_state} onChange={set('plate_state')} onNext={next} onBack={back} />;
 
   if (step === STEP_PLATE)
     return (
@@ -99,6 +110,7 @@ export default function ReportFlow() {
   if (step === STEP_OFFENSE)
     return (
       <StepOffense
+        reportType={report.report_type}
         selectedOffenses={report.offense_types}
         notes={report.notes}
         onChangeOffenses={set('offense_types')}

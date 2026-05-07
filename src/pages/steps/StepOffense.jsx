@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import StepShell from '../../components/StepShell';
-import { OFFENSES } from '../../data/offenses';
+import { DRIVING_OFFENSES, PARKING_OFFENSES } from '../../data/offenses';
 
-export default function StepOffense({ selectedOffenses, notes, onChangeOffenses, onChangeNotes, onNext, onBack }) {
+export default function StepOffense({ reportType, selectedOffenses, notes, onChangeOffenses, onChangeNotes, onNext, onBack }) {
+  const offenses = reportType === 'parking' ? PARKING_OFFENSES : DRIVING_OFFENSES;
   const [localOffenses, setLocalOffenses] = useState(selectedOffenses);
   const [localNotes, setLocalNotes] = useState(notes);
 
@@ -18,11 +19,13 @@ export default function StepOffense({ selectedOffenses, notes, onChangeOffenses,
     onNext();
   }
 
+  const title = reportType === 'parking' ? 'Parking Violation?' : 'What Did They Do?';
+
   return (
-    <StepShell step={6} total={6} title="What Did They Do?" subtitle="Select all that apply" onBack={onBack}>
+    <StepShell step={7} total={7} title={title} subtitle="Select all that apply" onBack={onBack}>
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          {OFFENSES.map((o) => {
+          {offenses.map((o) => {
             const active = localOffenses.includes(o.id);
             return (
               <button
