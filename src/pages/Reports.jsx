@@ -92,17 +92,20 @@ export default function Reports() {
   return (
     <div className="flex flex-col h-full">
       {/* Search bar */}
-      <div className="px-4 py-3 bg-brand-dark sticky top-0 z-10">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search plate number…"
-          autoComplete="off"
-          className="w-full bg-brand-card border-2 border-brand-border rounded-2xl
-                     px-5 py-4 text-white text-lg placeholder-gray-600
-                     outline-none focus:border-gray-500 transition-colors"
-        />
+      <div className="px-4 py-3 sticky top-0 z-10" style={{ background: 'linear-gradient(to bottom, #0D0D0D 80%, transparent)' }}>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg select-none">🔍</span>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search plate number…"
+            autoComplete="off"
+            className="w-full bg-[#1a1a1a] border-2 border-[#2e2e2e] rounded-2xl
+                       pl-11 pr-5 py-4 text-white text-lg placeholder-gray-600
+                       outline-none focus:border-gray-500 transition-colors"
+          />
+        </div>
       </div>
 
       {/* Results */}
@@ -184,50 +187,59 @@ function LicensePlate({ state, number }) {
 
 function PlateGroup({ group }) {
   const [expanded, setExpanded] = useState(true);
-  // Use the most recent report for vehicle info
   const latest = group[0];
   const colorHex = COLORS.find((c) => c.name === latest.vehicle_color)?.hex;
   const vehicleStr = [latest.vehicle_color, latest.vehicle_make, latest.vehicle_model]
-    .filter(Boolean)
-    .join(' ');
+    .filter(Boolean).join(' ');
   const count = group.length;
 
   return (
-    <div className="bg-brand-card border border-brand-border rounded-2xl mb-4 overflow-hidden">
-      {/* Header with plate */}
-      <div className="p-4 flex items-center gap-4">
+    <div
+      className="rounded-2xl overflow-hidden mb-5"
+      style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.4)', border: '1px solid #2e2e2e' }}
+    >
+      {/* Red accent stripe */}
+      <div className="h-1 bg-brand-red w-full" />
+
+      {/* Card header — plate + vehicle */}
+      <div className="bg-[#141414] px-5 py-4 flex items-center gap-4">
         <LicensePlate state={latest.plate_state} number={latest.plate_number} />
 
-        <div className="flex-1 min-w-0">
-          {vehicleStr && (
-            <div className="flex items-center gap-2 mb-2">
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
+          {/* Vehicle */}
+          {vehicleStr ? (
+            <div className="flex items-center gap-2.5">
               {colorHex && (
                 <span
-                  className="inline-block w-3.5 h-3.5 rounded-full border border-gray-600 shrink-0"
-                  style={{ backgroundColor: colorHex }}
+                  className="inline-block w-5 h-5 rounded-full border-2 border-black/30 shrink-0"
+                  style={{ backgroundColor: colorHex, boxShadow: '0 0 0 1px rgba(255,255,255,0.15)' }}
                 />
               )}
-              <span className="text-gray-300 text-sm truncate">{vehicleStr}</span>
+              <span className="text-white font-semibold text-base leading-tight truncate">
+                {vehicleStr}
+              </span>
             </div>
+          ) : (
+            <span className="text-gray-600 text-sm">Unknown vehicle</span>
           )}
+
+          {/* Tags row */}
           <div className="flex items-center gap-2 flex-wrap">
             {latest.report_type && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-border text-gray-400">
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/8 text-gray-300 border border-white/10">
                 {latest.report_type === 'parking' ? '🅿️ Parking' : '🚗 Driving'}
               </span>
             )}
             <span
               className={`text-xs font-bold px-2.5 py-1 rounded-full
-                ${count > 1
-                  ? 'bg-brand-red text-white'
-                  : 'bg-brand-border text-gray-400'}`}
+                ${count > 1 ? 'bg-brand-red text-white' : 'bg-white/8 text-gray-400 border border-white/10'}`}
             >
-              {count === 1 ? '1 report' : `${count} reports`}
+              {count === 1 ? '1 report' : `⚠ ${count} reports`}
             </span>
             {count > 1 && (
               <button
                 onClick={() => setExpanded((e) => !e)}
-                className="text-gray-500 text-xs underline"
+                className="text-gray-500 text-xs underline underline-offset-2"
               >
                 {expanded ? 'collapse' : 'expand'}
               </button>
@@ -238,7 +250,7 @@ function PlateGroup({ group }) {
 
       {/* Incident list */}
       {expanded && (
-        <div className="border-t border-brand-border divide-y divide-brand-border">
+        <div className="bg-[#1a1a1a] divide-y divide-[#252525]">
           {group.map((r) => (
             <Incident key={r.id} report={r} showVehicle={count > 1} />
           ))}
@@ -264,36 +276,38 @@ function Incident({ report, showVehicle }) {
   });
 
   return (
-    <div className="px-4 py-3">
+    <div className="px-5 py-4">
       {lightbox && (
         <PhotoLightbox url={report.photo_url} onClose={() => setLightbox(false)} />
       )}
 
-      <div className="flex items-center justify-between mb-2">
-        {showVehicle && (
-          <div className="flex items-center gap-1.5">
+      {/* Date + optional vehicle (multi-report) */}
+      <div className="flex items-center justify-between mb-3">
+        {showVehicle ? (
+          <div className="flex items-center gap-2">
             {colorHex && (
               <span
-                className="inline-block w-3 h-3 rounded-full border border-gray-600 shrink-0"
+                className="inline-block w-4 h-4 rounded-full border border-black/30 shrink-0"
                 style={{ backgroundColor: colorHex }}
               />
             )}
-            <span className="text-gray-400 text-xs">
+            <span className="text-gray-300 text-sm font-medium">
               {[report.vehicle_color, report.vehicle_make, report.vehicle_model]
                 .filter(Boolean).join(' ') || 'Unknown vehicle'}
             </span>
           </div>
-        )}
-        <span className="text-gray-600 text-xs ml-auto">{dateStr}</span>
+        ) : <span />}
+        <span className="text-gray-500 text-xs tabular-nums">{dateStr}</span>
       </div>
 
+      {/* Offense badges */}
       {offenseLabels.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-2">
+        <div className="flex flex-wrap gap-2 mb-3">
           {offenseLabels.map(({ key, label }) => (
             <span
               key={key}
-              className="bg-brand-red/20 border border-brand-red/40 text-brand-red
-                         text-xs font-semibold px-2 py-0.5 rounded-full"
+              className="bg-brand-red/15 border border-brand-red/35 text-brand-red
+                         text-sm font-semibold px-3 py-1 rounded-full"
             >
               {label}
             </span>
@@ -301,25 +315,28 @@ function Incident({ report, showVehicle }) {
         </div>
       )}
 
+      {/* Notes */}
       {report.notes && (
-        <p className="text-gray-400 text-sm italic mb-2">"{report.notes}"</p>
+        <p className="text-gray-400 text-sm italic leading-relaxed mb-3 pl-1 border-l-2 border-gray-700">
+          {report.notes}
+        </p>
       )}
 
+      {/* Photo */}
       {report.photo_url && (
         <button
           onClick={() => setLightbox(true)}
-          className="w-full mt-1 rounded-xl overflow-hidden border border-brand-border
-                     bg-black active:opacity-80 transition-opacity block"
+          className="w-full rounded-xl overflow-hidden border border-[#2e2e2e]
+                     bg-black active:opacity-75 transition-opacity block"
         >
-          {/* Fixed 4:3 container — image letter/pillarboxed, never cropped */}
           <div className="relative w-full" style={{ paddingBottom: '75%' }}>
             <img
               src={report.photo_url}
-              alt="Report photo — tap to enlarge"
+              alt="Report photo"
               className="absolute inset-0 w-full h-full object-contain"
             />
           </div>
-          <p className="text-gray-600 text-xs py-1">Tap to enlarge</p>
+          <p className="text-gray-600 text-xs py-1.5 text-center tracking-wide">TAP TO ENLARGE</p>
         </button>
       )}
     </div>
