@@ -3,6 +3,7 @@ import { supabase } from '../supabase';
 import { isDemo, demoQueryReports } from '../demo';
 import { COLORS } from '../data/colors';
 import { OFFENSES } from '../data/offenses';
+import { getPlateStyle } from '../data/plateStyles';
 
 function groupByPlate(reports) {
   const map = new Map();
@@ -97,28 +98,55 @@ export default function Reports() {
 }
 
 function LicensePlate({ state, number }) {
+  const { bg, text, label } = getPlateStyle(state);
+
+  // Darken bg slightly for border
+  const borderColor = text + 'CC';
+
   return (
     <div
-      className="relative inline-flex flex-col items-center justify-center
-                 bg-white rounded-xl px-5 py-2 min-w-[160px]"
+      className="relative flex flex-col items-center justify-center rounded-xl shrink-0"
       style={{
-        border: '3px solid #1a1a2e',
-        boxShadow: '0 0 0 1px #aaa inset, 2px 4px 12px rgba(0,0,0,0.5)',
+        width: 176,
+        height: 88,
+        backgroundColor: bg,
+        border: `3px solid ${borderColor}`,
+        boxShadow: `0 0 0 1px rgba(255,255,255,0.15) inset, 2px 4px 14px rgba(0,0,0,0.55)`,
       }}
     >
       {/* Corner bolts */}
-      {['top-1.5 left-1.5', 'top-1.5 right-1.5', 'bottom-1.5 left-1.5', 'bottom-1.5 right-1.5'].map((pos) => (
+      {[
+        { t: 6, l: 6 }, { t: 6, r: 6 },
+        { b: 6, l: 6 }, { b: 6, r: 6 },
+      ].map((pos, i) => (
         <span
-          key={pos}
-          className={`absolute ${pos} w-2 h-2 rounded-full bg-gray-400 border border-gray-500`}
-          style={{ boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.6)' }}
+          key={i}
+          className="absolute w-2 h-2 rounded-full"
+          style={{
+            top:    pos.t,
+            bottom: pos.b,
+            left:   pos.l,
+            right:  pos.r,
+            backgroundColor: text + '55',
+            border: `1px solid ${text}88`,
+          }}
         />
       ))}
 
-      <span className="text-gray-500 text-[10px] font-bold tracking-[0.25em] uppercase leading-none mb-0.5">
+      <span
+        className="text-[10px] font-bold tracking-[0.3em] uppercase leading-none mb-1"
+        style={{ color: label }}
+      >
         {state}
       </span>
-      <span className="text-gray-900 text-3xl font-black tracking-widest leading-none">
+      <span
+        className="font-black leading-none tracking-wider"
+        style={{
+          color: text,
+          fontSize: number.length <= 6 ? 26 : number.length <= 8 ? 22 : 18,
+          letterSpacing: number.length <= 6 ? '0.15em' : '0.08em',
+        }}
+      >
         {number}
       </span>
     </div>
