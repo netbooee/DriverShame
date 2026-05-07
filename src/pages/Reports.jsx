@@ -5,6 +5,35 @@ import { COLORS } from '../data/colors';
 import { OFFENSES } from '../data/offenses';
 import { getPlateStyle } from '../data/plateStyles';
 
+function PhotoLightbox({ url, onClose }) {
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center"
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white text-3xl w-11 h-11 flex items-center
+                   justify-center rounded-full bg-white/10 active:bg-white/20"
+      >
+        ✕
+      </button>
+      <img
+        src={url}
+        alt="Full photo"
+        className="max-w-full max-h-full object-contain"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
 function groupByPlate(reports) {
   const map = new Map();
   for (const r of reports) {
@@ -220,6 +249,8 @@ function PlateGroup({ group }) {
 }
 
 function Incident({ report, showVehicle }) {
+  const [lightbox, setLightbox] = useState(false);
+
   const offenseLabels = OFFENSES
     .filter((o) => (report.offense_types || []).includes(o.id))
     .map((o) => ({ key: o.id, label: `${o.icon} ${o.label}` }));
@@ -234,6 +265,10 @@ function Incident({ report, showVehicle }) {
 
   return (
     <div className="px-4 py-3">
+      {lightbox && (
+        <PhotoLightbox url={report.photo_url} onClose={() => setLightbox(false)} />
+      )}
+
       <div className="flex items-center justify-between mb-2">
         {showVehicle && (
           <div className="flex items-center gap-1.5">
@@ -271,11 +306,21 @@ function Incident({ report, showVehicle }) {
       )}
 
       {report.photo_url && (
-        <img
-          src={report.photo_url}
-          alt="Report photo"
-          className="rounded-xl w-full max-h-52 object-cover border border-brand-border mt-1"
-        />
+        <button
+          onClick={() => setLightbox(true)}
+          className="w-full mt-1 rounded-xl overflow-hidden border border-brand-border
+                     bg-black active:opacity-80 transition-opacity block"
+        >
+          {/* Fixed 4:3 container — image letter/pillarboxed, never cropped */}
+          <div className="relative w-full" style={{ paddingBottom: '75%' }}>
+            <img
+              src={report.photo_url}
+              alt="Report photo — tap to enlarge"
+              className="absolute inset-0 w-full h-full object-contain"
+            />
+          </div>
+          <p className="text-gray-600 text-xs py-1">Tap to enlarge</p>
+        </button>
       )}
     </div>
   );

@@ -33,8 +33,15 @@ export default function StepPhoto({ value, onChange, onNext, onBack }) {
         />
 
         {preview ? (
-          <div className="relative rounded-2xl overflow-hidden border-2 border-brand-border">
-            <img src={preview} alt="Report photo" className="w-full object-cover max-h-72" />
+          <div className="relative rounded-2xl overflow-hidden border-2 border-brand-border bg-black">
+            {/* 4:3 container — full image always visible, no cropping */}
+            <div className="relative w-full" style={{ paddingBottom: '75%' }}>
+              <img
+                src={preview}
+                alt="Report photo"
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+            </div>
             <button
               onClick={clear}
               className="absolute top-2 right-2 bg-black/70 text-white rounded-full w-9 h-9
