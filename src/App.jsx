@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { supabase } from './supabase';
+import { isDemo } from './demo';
 import NavBar from './components/NavBar';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import ReportFlow from './pages/ReportFlow';
 import Reports from './pages/Reports';
+
+const DEMO_SESSION = { user: { email: 'demo@example.com' } };
 
 function AuthGuard({ session, children }) {
   if (!session) return <Navigate to="/login" replace />;
@@ -29,6 +32,10 @@ export default function App() {
   const [session, setSession] = useState(undefined); // undefined = loading
 
   useEffect(() => {
+    if (isDemo()) {
+      setSession(DEMO_SESSION);
+      return;
+    }
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setSession(session);

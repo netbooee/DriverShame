@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { isDemo, demoInsertReport } from '../demo';
 import StepState from './steps/StepState';
 import StepPlate from './steps/StepPlate';
 import StepMake from './steps/StepMake';
@@ -45,13 +46,17 @@ export default function ReportFlow() {
     setSubmitting(true);
     setError('');
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error: err } = await supabase.from('reports').insert({
-        ...report,
-        user_id: user.id,
-        reporter_email: user.email,
-      });
-      if (err) throw err;
+      if (isDemo()) {
+        demoInsertReport(report);
+      } else {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { error: err } = await supabase.from('reports').insert({
+          ...report,
+          user_id: user.id,
+          reporter_email: user.email,
+        });
+        if (err) throw err;
+      }
       navigate('/reports');
     } catch (e) {
       setError(e.message || 'Failed to submit report');

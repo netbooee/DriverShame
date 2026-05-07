@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
+import { isDemo, demoQueryReports } from '../demo';
 import { COLORS } from '../data/colors';
 import { OFFENSES } from '../data/offenses';
 
@@ -13,6 +14,11 @@ export default function Reports() {
     setLoading(true);
     setError('');
     try {
+      if (isDemo()) {
+        setReports(demoQueryReports(query));
+        return;
+      }
+
       let req = supabase
         .from('reports')
         .select('*')
@@ -20,7 +26,6 @@ export default function Reports() {
         .limit(100);
 
       if (query.trim()) {
-        // ilike allows partial matches; use % wildcard
         req = req.ilike('plate_number', `%${query.trim()}%`);
       }
 

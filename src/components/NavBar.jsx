@@ -1,11 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { isDemo, disableDemo } from '../demo';
 
 export default function NavBar() {
   const navigate = useNavigate();
 
   async function signOut() {
-    await supabase.auth.signOut();
+    if (isDemo()) {
+      disableDemo();
+    } else {
+      await supabase.auth.signOut();
+    }
     navigate('/login');
   }
 

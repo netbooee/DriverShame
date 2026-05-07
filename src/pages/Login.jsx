@@ -1,11 +1,19 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
+import { enableDemo } from '../demo';
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  function startDemo() {
+    enableDemo();
+    navigate('/report');
+  }
 
   async function sendMagicLink(e) {
     e.preventDefault();
@@ -72,6 +80,21 @@ export default function Login() {
           <p className="text-gray-600 text-xs text-center">
             No password required — we'll email you a sign-in link.
           </p>
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1 border-t border-brand-border" />
+            <span className="text-gray-600 text-xs">or</span>
+            <div className="flex-1 border-t border-brand-border" />
+          </div>
+
+          <button
+            type="button"
+            onClick={startDemo}
+            className="w-full bg-brand-card border-2 border-brand-border text-gray-300
+                       font-semibold py-4 rounded-2xl text-lg active:scale-95 transition-transform"
+          >
+            Try Demo (no account needed)
+          </button>
         </form>
       )}
     </div>
