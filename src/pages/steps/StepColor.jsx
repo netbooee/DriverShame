@@ -8,7 +8,7 @@ export default function StepColor({ value, onChange, onNext, onBack }) {
   }
 
   return (
-    <StepShell step={6} total={7} title="Vehicle Color" subtitle="Tap the color" onBack={onBack}>
+    <StepShell step={6} total={8} title="Vehicle Color" subtitle="Tap the color" onBack={onBack}>
       <div className="grid grid-cols-3 gap-3">
         {COLORS.map((c) => (
           <button

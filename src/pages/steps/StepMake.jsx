@@ -8,7 +8,7 @@ export default function StepMake({ value, onChange, onNext, onBack }) {
   }
 
   return (
-    <StepShell step={4} total={7} title="Vehicle Make" subtitle="Tap the brand" onBack={onBack}>
+    <StepShell step={4} total={8} title="Vehicle Make" subtitle="Tap the brand" onBack={onBack}>
       <div className="grid grid-cols-2 gap-3">
         {MAKES.map((make) => (
           <button

@@ -267,7 +267,15 @@ function Incident({ report, showVehicle }) {
       )}
 
       {report.notes && (
-        <p className="text-gray-400 text-sm italic">"{report.notes}"</p>
+        <p className="text-gray-400 text-sm italic mb-2">"{report.notes}"</p>
+      )}
+
+      {report.photo_url && (
+        <img
+          src={report.photo_url}
+          alt="Report photo"
+          className="rounded-xl w-full max-h-52 object-cover border border-brand-border mt-1"
+        />
       )}
     </div>
   );

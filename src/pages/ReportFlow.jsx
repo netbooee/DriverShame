@@ -9,6 +9,7 @@ import StepMake from './steps/StepMake';
 import StepModel from './steps/StepModel';
 import StepColor from './steps/StepColor';
 import StepOffense from './steps/StepOffense';
+import StepPhoto from './steps/StepPhoto';
 import StepConfirm from './steps/StepConfirm';
 
 const STEP_TYPE    = 0;
@@ -18,17 +19,19 @@ const STEP_MAKE    = 3;
 const STEP_MODEL   = 4;
 const STEP_COLOR   = 5;
 const STEP_OFFENSE = 6;
-const STEP_CONFIRM = 7;
+const STEP_PHOTO   = 7;
+const STEP_CONFIRM = 8;
 
 const blank = {
-  report_type:    '',   // 'driving' | 'parking'
-  plate_state:    '',
-  plate_number:   '',
-  vehicle_make:   '',
-  vehicle_model:  '',
-  vehicle_color:  '',
-  offense_types:  [],
-  notes:          '',
+  report_type:   '',
+  plate_state:   '',
+  plate_number:  '',
+  vehicle_make:  '',
+  vehicle_model: '',
+  vehicle_color: '',
+  offense_types: [],
+  notes:         '',
+  photo:         null,  // { file, preview } — not persisted to DB directly
 };
 
 export default function ReportFlow() {
@@ -50,17 +53,45 @@ export default function ReportFlow() {
     next();
   }
 
+  async function uploadPhoto(file, userId) {
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `${userId}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from('report-photos')
+      .upload(path, file, { upsert: false, contentType: file.type });
+    if (upErr) throw upErr;
+    const { data } = supabase.storage.from('report-photos').getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   async function submit() {
     setSubmitting(true);
     setError('');
     try {
       if (isDemo()) {
-        demoInsertReport(report);
+        demoInsertReport({
+          ...report,
+          photo_url: report.photo?.preview ?? null,
+        });
       } else {
         const { data: { user } } = await supabase.auth.getUser();
+
+        let photo_url = null;
+        if (report.photo?.file) {
+          photo_url = await uploadPhoto(report.photo.file, user.id);
+        }
+
         const { error: err } = await supabase.from('reports').insert({
-          ...report,
-          user_id: user.id,
+          report_type:   report.report_type,
+          plate_state:   report.plate_state,
+          plate_number:  report.plate_number,
+          vehicle_make:  report.vehicle_make,
+          vehicle_model: report.vehicle_model,
+          vehicle_color: report.vehicle_color,
+          offense_types: report.offense_types,
+          notes:         report.notes,
+          photo_url,
+          user_id:       user.id,
           reporter_email: user.email,
         });
         if (err) throw err;
@@ -119,6 +150,9 @@ export default function ReportFlow() {
         onBack={back}
       />
     );
+
+  if (step === STEP_PHOTO)
+    return <StepPhoto value={report.photo} onChange={set('photo')} onNext={next} onBack={back} />;
 
   if (step === STEP_CONFIRM)
     return (

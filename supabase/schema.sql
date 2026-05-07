@@ -14,9 +14,26 @@ create table if not exists public.reports (
   vehicle_color text,
   report_type   text check (report_type in ('driving', 'parking')),
   offense_types text[] default '{}',
-  notes text,
+  notes         text,
+  photo_url     text,
   reporter_email text
 );
+
+-- ─── Storage bucket for report photos ────────────────────────────────────────
+-- Run these AFTER creating the bucket named "report-photos" in the dashboard
+-- (Storage → New bucket → name: report-photos → Public: ON)
+
+-- Allow authenticated users to upload their own photos
+create policy "Authenticated users can upload photos"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'report-photos' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Allow authenticated users to read all photos
+create policy "Authenticated users can view photos"
+  on storage.objects for select
+  to authenticated
+  using (bucket_id = 'report-photos');
 
 -- Index for fast partial plate searches
 create index if not exists reports_plate_number_idx

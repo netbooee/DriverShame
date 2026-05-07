@@ -22,7 +22,7 @@ export default function StepOffense({ reportType, selectedOffenses, notes, onCha
   const title = reportType === 'parking' ? 'Parking Violation?' : 'What Did They Do?';
 
   return (
-    <StepShell step={7} total={7} title={title} subtitle="Select all that apply" onBack={onBack}>
+    <StepShell step={7} total={8} title={title} subtitle="Select all that apply" onBack={onBack}>
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           {offenses.map((o) => {

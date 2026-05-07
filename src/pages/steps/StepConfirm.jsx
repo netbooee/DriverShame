@@ -55,6 +55,15 @@ export default function StepConfirm({ report, onSubmit, onBack, submitting }) {
             <span className="text-gray-300 italic">{report.notes}</span>
           </Row>
         )}
+        {report.photo?.preview && (
+          <Row label="Photo">
+            <img
+              src={report.photo.preview}
+              alt="Report photo"
+              className="rounded-xl w-full max-h-48 object-cover border border-brand-border"
+            />
+          </Row>
+        )}
       </div>
 
       <div className="flex gap-3 mt-auto">

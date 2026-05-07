@@ -16,7 +16,7 @@ export default function StepPlate({ value, plateState, onChange, onNext, onBack 
   }
 
   return (
-    <StepShell step={3} total={7} title="Plate Number" subtitle={`State: ${plateState}`} onBack={onBack}>
+    <StepShell step={3} total={8} title="Plate Number" subtitle={`State: ${plateState}`} onBack={onBack}>
       <div className="flex flex-col gap-6 pt-2">
         <div className="bg-brand-card border-2 border-brand-border rounded-2xl p-4 text-center">
           <div className="text-xs text-gray-500 mb-1 uppercase tracking-widest">{plateState}</div>
