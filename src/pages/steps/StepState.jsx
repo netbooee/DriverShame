@@ -8,7 +8,7 @@ export default function StepState({ value, onChange, onNext, onBack }) {
   }
 
   return (
-    <StepShell step={2} total={8} title="Plate State" subtitle="Tap your state" onBack={onBack}>
+    <StepShell step={2} total={8} title="Plate State" subtitle="Tap your state" onBack={onBack} fullWidth>
       <div className="grid grid-cols-6 gap-1">
         {STATES.map((s) => (
           <button

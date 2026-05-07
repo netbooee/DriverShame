@@ -1,8 +1,8 @@
-export default function StepShell({ step, total, title, subtitle, onBack, children }) {
+export default function StepShell({ step, total, title, subtitle, onBack, children, fullWidth = false }) {
   const pct = Math.round((step / total) * 100);
 
   return (
-    <div className="flex flex-col h-full max-w-lg mx-auto px-4 py-4">
+    <div className={`flex flex-col h-full py-4 ${fullWidth ? 'px-2' : 'max-w-lg mx-auto px-4'}`}>
       {/* Progress + back */}
       <div className="flex items-center gap-3 mb-4">
         {onBack && (
